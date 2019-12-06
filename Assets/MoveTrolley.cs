@@ -13,6 +13,7 @@ public class MoveTrolley : MonoBehaviour
     MarketItems mi;
     string nextItem = "";
     GameObject targetObj;
+    SendMessage messageSender;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,6 +21,7 @@ public class MoveTrolley : MonoBehaviour
         shoppingComplete = false;
         sl = transform.GetComponent<ShoppingList>();
         mi = transform.GetComponentInParent<MarketItems>();
+        messageSender = (SendMessage)GameObject.Find("messageSender").GetComponent(typeof(SendMessage));
         //GameObject.Find("Product_potatoes").GetComponentInChildren<OBJExporter>().Export("temp.obj");
         //GameObject potato = GameObject.Find("Product_potatoes (1)");
         //potato.AddComponent<Rigidbody>();
@@ -57,7 +59,7 @@ public class MoveTrolley : MonoBehaviour
                 cartMoving = true;
                 if (sl.items.Count == 0)
                 {
-                
+
                     shoppingComplete = true;
                     Debug.Log("Shopping Complete");
                 }
@@ -92,15 +94,15 @@ public class MoveTrolley : MonoBehaviour
         collision.transform.SetParent(transform);
         //GameObject.Find("screenshotCam").GetComponent<screenshotScript>().takeScreenShot();
         MeshFilter mf;
-        if((mf = targetObj.GetComponent<MeshFilter>()) != null)
+        if ((mf = targetObj.GetComponent<MeshFilter>()) != null)
         {
-            
+
             ExportObj eo = targetObj.AddComponent<ExportObj>();
             eo.CreateFile(targetObj);
         }
         else
         {
-            
+
             mf = targetObj.GetComponentInChildren<MeshFilter>();
             Debug.Log(mf.gameObject.name);
             //GameObject child = targetObj.GetComponentInChildren<GameObject>();
@@ -109,10 +111,13 @@ public class MoveTrolley : MonoBehaviour
         }
         cartMoving = false;
         //call sendToPython function
+        messageSender.sendBytes("001", 0, 0, "000");
         Debug.Log("Picked up " + mi.searchProduct(collision.gameObject));
     }
 
     public void removeTrigger()
     {
         //Debug.Log("entered");
-        targetObj.GetComponent<BoxColl
+        targetObj.GetComponent<BoxCollider>().isTrigger = false;
+    }
+}

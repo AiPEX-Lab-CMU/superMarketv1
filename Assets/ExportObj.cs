@@ -10,12 +10,12 @@ public class ExportObj : MonoBehaviour
 
     private string pathUrl = "Assets/";
     private MeshFilter mf;
-
-    //void Start()
-    //{
-    //    mf = this.gameObject.GetComponent<MeshFilter>();
-    //    CreateFile();
-    //}
+    SendMessage messageSender;
+    void Start()
+    {
+        //    mf = this.gameObject.GetComponent<MeshFilter>();
+        //    CreateFile();
+    }
 
     private string MeshToString(MeshFilter mf, Vector3 scale)
     {
@@ -106,10 +106,15 @@ public class ExportObj : MonoBehaviour
     public void CreateFile(GameObject gm)
     {
         mf = gm.GetComponent<MeshFilter>();
-        //call sendToPython function
         using (StreamWriter streamWriter = new StreamWriter(string.Format("{0}{1}.obj", pathUrl, this.gameObject.name)))
         {
             streamWriter.Write(MeshToString(mf, new Vector3(-1f, 1f, 1f)));
             streamWriter.Close();
         }
+        //call sendToPython function
+        messageSender = (SendMessage)GameObject.Find("messageSender").GetComponent(typeof(SendMessage));
+        string fileDestination = string.Format("{0}{1}.obj", pathUrl, this.gameObject.name);
+        messageSender.sendBytes("002", 0, 0, fileDestination);
+    }
+}
        

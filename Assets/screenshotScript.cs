@@ -8,13 +8,14 @@ public class screenshotScript : MonoBehaviour
     public int resHeight;
     int count = 0;
     Camera cam;
-
+    SendMessage messageSender;
     // Start is called before the first frame update
     void Start()
     {
         resWidth = 1280;
         resHeight = 720;
         cam = GameObject.Find("screenshotCam").GetComponent<Camera>();
+        messageSender = (SendMessage)GameObject.Find("messageSender").GetComponent(typeof(SendMessage));
     }
 
     public void takeScreenShot()
@@ -30,12 +31,16 @@ public class screenshotScript : MonoBehaviour
         RenderTexture.active = null;
         Destroy(rt);
         byte[] bytes = screen.EncodeToJPG();
-        string filename = string.Format("{0}/screen" + count +".jpg", Application.dataPath);
         //call sendToPython function
+        string filename = string.Format("{0}/screen" + count + ".jpg", Application.dataPath);
+        messageSender.sendBytes("000", screen.width, screen.height, filename);
         System.IO.File.WriteAllBytes(filename, bytes);
         Debug.Log("screenshot taken");
         cam.enabled = false;
         count++;
     }
     // Update is called once per frame
-    void 
+    void update()
+    {
+    }
+}
